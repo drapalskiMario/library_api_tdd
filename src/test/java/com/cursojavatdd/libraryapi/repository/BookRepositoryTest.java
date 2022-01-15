@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
@@ -22,16 +24,20 @@ public class BookRepositoryTest {
     @Autowired
     BookRepository bookRepository;
 
+    private Book createMockBook() {
+        return Book
+                .builder()
+                .author("Arthur")
+                .title("As aventuras do Rei")
+                .isbn("123")
+                .build();
+    }
+
     @Test
     @DisplayName("Deve retornar verdadeiro quando existir um livro na base com o isbn informado")
     public void returnTrueWhenIsbnExists() {
         String isbn = "123";
-        Book book = Book
-                .builder()
-                .author("Arthur")
-                .title("As aventuras do Rei")
-                .isbn(isbn)
-                .build();
+        Book book = this.createMockBook();
         entityManager.persist(book);
 
         boolean exists = bookRepository.existsByIsbn(isbn);
@@ -44,5 +50,40 @@ public class BookRepositoryTest {
         String isbn = "123";
         boolean exists = bookRepository.existsByIsbn(isbn);
         Assertions.assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve obter um livro por id")
+    public void findByIdTest() {
+        Book book = this.createMockBook();
+        entityManager.persist(book);
+
+        Optional<Book> bookFound = bookRepository.findById(book.getId());
+
+        Assertions.assertThat(bookFound.isPresent()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve salvar um livro")
+    public void saveBookTest() {
+        Book book = createMockBook();
+        Book savedBook = bookRepository.save(book);
+
+        Assertions.assertThat(savedBook.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Deve excluir um livro")
+    public void deleteBook() {
+        Book book = createMockBook();
+        entityManager.persist(book);
+
+        Book foundBook = entityManager.find(Book.class, book.getId());
+        Assertions.assertThat(foundBook).isNotNull();
+
+        bookRepository.delete(foundBook);
+
+        Book deletedBook = entityManager.find(Book.class, book.getId());
+        Assertions.assertThat(deletedBook).isNull();
     }
 }
