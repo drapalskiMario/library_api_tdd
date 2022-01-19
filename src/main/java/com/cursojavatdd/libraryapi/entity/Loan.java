@@ -9,7 +9,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,6 +20,9 @@ public class Loan {
 
     @Column
     private String customer;
+
+    @Column(name = "customer_email")
+    private String customerEmail;
 
     @Column
     private LocalDate loanDate;

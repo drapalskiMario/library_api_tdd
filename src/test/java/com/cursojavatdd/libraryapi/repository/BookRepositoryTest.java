@@ -25,12 +25,7 @@ public class BookRepositoryTest {
     BookRepository bookRepository;
 
     private Book createMockBook() {
-        return Book
-                .builder()
-                .author("Arthur")
-                .title("As aventuras do Rei")
-                .isbn("123")
-                .build();
+        return new Book(null, "As aventuras do Rei", "Arthur", "123", null);
     }
 
     @Test

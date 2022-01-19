@@ -44,22 +44,15 @@ public class BookControllerTest {
     BookService bookService;
 
     private BookDTO createNewBookDTO() {
-        return BookDTO
-                .builder()
-                .author("Arthur")
-                .title("As aventuras do Rei")
-                .isbn("001")
-                .build();
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setAuthor("Arthur");
+        bookDTO.setTitle("As aventuras do Rei");
+        bookDTO.setIsbn("001");
+        return bookDTO;
     }
 
     private Book createSavedBook() {
-        return Book
-                .builder()
-                .id(101L)
-                .author("Arthur")
-                .title("As aventuras do Rei")
-                .isbn("001")
-                .build();
+        return new Book(101L, "As aventuras do Rei", "Arthur", "001", null);
     }
 
     @Test
@@ -168,21 +161,13 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve atualizar um livro")
     public void updateBookTest() throws Exception{
-        Long id = 101L;
         Book book = this.createSavedBook();
         String json = new ObjectMapper().writeValueAsString(book);
 
-        BDDMockito.given(bookService.getById(Mockito.anyLong())).willReturn(Optional.of(
-                Book.builder()
-                        .id(id)
-                        .author("some author")
-                        .title("some title")
-                        .isbn("123")
-                        .build()
-        ));
+        BDDMockito.given(bookService.getById(Mockito.anyLong())).willReturn(Optional.of(book));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .put(BOOK_API.concat("/" + id))
+                .put(BOOK_API.concat("/" + 101))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json);
@@ -213,14 +198,10 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve deletar um livro")
     public void deleteBookTest() throws Exception{
-        Long id = 101L;
-
-        BDDMockito.given(bookService.getById(Mockito.anyLong())).willReturn(Optional.of(
-                Book.builder().id(id).build()
-        ));
+        BDDMockito.given(bookService.getById(Mockito.anyLong())).willReturn(Optional.of(this.createSavedBook()));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-                .delete(BOOK_API.concat("/" + id));
+                .delete(BOOK_API.concat("/" + 101));
 
         mockMvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -243,7 +224,6 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve filtrar livros")
     public void findBookTest() throws Exception{
-        Long id = 101L;
         Book book = this.createSavedBook();
 
         BDDMockito.given(bookService.find(Mockito.any(Book.class), Mockito.any(Pageable.class)))
