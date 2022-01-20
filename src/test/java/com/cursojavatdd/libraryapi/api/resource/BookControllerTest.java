@@ -4,6 +4,7 @@ import com.cursojavatdd.libraryapi.api.dto.BookDTO;
 import com.cursojavatdd.libraryapi.entity.Book;
 import com.cursojavatdd.libraryapi.exception.BusinessException;
 import com.cursojavatdd.libraryapi.service.BookService;
+import com.cursojavatdd.libraryapi.service.LoanService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +43,9 @@ public class BookControllerTest {
 
     @MockBean
     BookService bookService;
+
+    @MockBean
+    LoanService loanService;
 
     private BookDTO createNewBookDTO() {
         BookDTO bookDTO = new BookDTO();
